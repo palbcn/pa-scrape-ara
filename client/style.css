@@ -1,0 +1,42 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit; margin:0;padding:0;
+}
+body {
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 14px;
+}
+body {
+  margin: 0;
+}
+a {
+  text-decoration: none;
+}
+main {
+  margin: 0 auto;
+  max-width: 800px;
+  padding-left: 6px;
+}
+main h1 {
+  border-top: 1px solid grey;
+  font-size: 2rem;
+}
+main p {
+  font-size: 20px;
+}
+header {
+  background-color: rgb(0, 28, 76);
+  color: white;
+  padding: 2em;
+}
+header a {
+  color: #ccf;
+}
+footer {
+  background-color: #999;
+  font-size: 0.8rem;
+  color: white;
+  padding: 1em;
+}
