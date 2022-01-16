@@ -2,7 +2,6 @@
  scraper ara.cat/opinio
  pa bcn
 */
-
 const request = require("superagent");
 const cheerio = require("cheerio");
 const fs = require("fs/promises");
@@ -10,9 +9,9 @@ const fs = require("fs/promises");
 const ROOT = "https://ara.cat/opinio";
 const TESTDATE = /\d+\/\d+\/\d{4}/;
 
-
 /******************************************************************/
-ARTICLES_JSON_FN = '.data/ara-articles.json';
+const ARTICLES_JSON_FN = '.data/ara-articles.json';
+
 let allArticles = [];
 let modifiedArticles = false;
 /*---------------------------------------------*/
@@ -20,7 +19,6 @@ async function readArticles() {
   try {
     let jsontxt = await fs.readFile(ARTICLES_JSON_FN,'utf8');
     let articles = JSON.parse(jsontxt);
-    console.log(ARTICLES_JSON_FN,'read',articles.length,'articles');
     if (!Array.isArray(articles)) return [];
     articles.sort ( (a,b) => parseInt(a.hash,16) - parseInt(b.hash,16) );
     return articles;
@@ -100,7 +98,7 @@ function extractLinks(s) {
 	let $ = cheerio.load(s);
 	let links = $("a").toArray().map( an => {
     return { 
-      title: $(an).text(), 
+      title: $(an).attr("title") || $(an).text(), 
       href: $(an).attr("href"),
       hash: hash($(an).attr("href"))
     }
@@ -111,12 +109,14 @@ function extractLinks(s) {
       .replace(/\s+/gm,' ');
     return link;
   });
+  console.log(links.length);
 	links = links.filter( link => 
     (link.href !== undefined) && 
     (link.href !== '') && 
     (link.href.endsWith('.html')) && 
     (link.title !== '')
   );
+  console.log(links.length);
   return links;
 }
 
@@ -167,10 +167,8 @@ async function downloadLinks(links) {
   }
 }
 
-
 /******************************************************************/
 async function init() {
-  console.log('scraper init');
   allArticles = await readArticles();
   modifiedArticles = false;
   let links = await scrapeLinks();

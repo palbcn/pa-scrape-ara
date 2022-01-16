@@ -1,0 +1,23 @@
+{
+  "name": "pa-scrape-ara",
+  "version": "1.0.1",
+  "description": "A simple scraping prototype.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "superagent": "^7.0.1",
+    "express": "^4.17.2",
+    "cheerio": "^0.22.0"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "scrape",
+    "express"
+  ]
+}
