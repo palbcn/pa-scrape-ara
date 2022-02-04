@@ -1,0 +1,23 @@
+  {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Server",
+        "program": "${workspaceFolder}/server.js",
+        "request": "launch",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+        "type": "pwa-node"
+      },
+      {
+        "name": "Launch current",
+        "program": "${file}",
+        "type": "pwa-node",
+        "request": "launch",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+      }
+    ]
+  }

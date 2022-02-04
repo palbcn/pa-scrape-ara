@@ -65,6 +65,7 @@ function getArticle(hash) {
   if (idx >= 0) return allArticles[idx];
   else return null;
 }
+
 function setArticle(hash, article) {
   let idx = findArticle(hash);
   article.hash = hash;
@@ -80,25 +81,8 @@ function setArticle(hash, article) {
 (async function main() {
   allArticles = await readArticles();
   modifiedArticles = false;
-  let links = allArticles.map(a => ({ hash: a.hash, href: a.href }))
-  await fs.writeFile(path.join(os.tmpdir(), "ara-links.json"), JSON.stringify(links, null, 2), "utf8");
 
-  let urls = allArticles.reduce((a, e, i) => {
-    let url = new URL(e.href);
-    let pth = path.dirname(url.pathname);
-    // a contains url, increment count
-    let index = a.findIndex(e => e.path == pth);
-    if (index != -1) {
-      a[index].count++;
-      a[index].all.push(url);
-    } else {
-      a.push({ path: pth, count: 1, all: [url] });
-    }
-    return a;
-  }, []);
-  urls.sort((a, b) => b.count - a.count);
 
-  await fs.writeFile(path.join(os.tmpdir(), "ara-urls.json"), JSON.stringify(urls, null, 2), "utf8");
 
 })()
 

@@ -109,7 +109,6 @@ function extractLinks(s) {
       .replace(/\s+/gm,' ');
     return link;
   });
-  console.log(links.length);
 	links = links.filter( link => 
     (link.href !== undefined) && 
     (link.href !== '') && 
@@ -120,22 +119,37 @@ function extractLinks(s) {
   return links;
 }
 
-function extractSelectorText(html,selector){
-  let $ = cheerio.load(html);
+function extractSelectorText($, selector) {
   let selected = $(selector);
-  return selected.text()
-        .replace(/\t/g, ' ')       // replace tabs
-        .replace(/ *(\n|\r|\r\n) */g, '\n')
-        .replace(/\n+(?=\n)/g, '') // Replace multiple lines with single line 
-        .replace(/ +(?= )/g, '');  // Replace multiple spaces with single space 
+  let texts = selected.map((indx, el) => {
+    let $el = $(el);
+    let txt = $el.text();
+    txt = txt.replace(/\t/g, ' ')       // replace tabs
+      .replace(/ *(\n|\r|\r\n) */g, '\n')
+      .replace(/\n+(?=\n)/g, '') // Replace multiple lines with single line 
+      .replace(/ +(?= )/g, '');  // Replace multiple spaces with single space 
+    return txt;
+  });
+  return texts.get().join('\n');
 }
 
 /******************************************************************/
 async function scrapeArticle(url) {
   let res = await request(url);
   let html = res.text;
-  let txt = extractSelectorText(html,"main");
-  return txt;  
+  let $ = cheerio.load(html);
+  let content = extractSelectorText($, ".ara-body p");
+  let author = $("opinion-authors a.name").text();
+  let date = $(".ara-opening-info span.date").text();
+  if (TESTDATE.test(date)) {
+    let ddmmyyyy = date.split("/");
+    let newdate = new Date(ddmmyyyy[2], ddmmyyyy[1] - 1, ddmmyyyy[0]);
+    date = newdate.getTime();
+  } else {
+    date = Date.now();
+  }
+  let title = $(".ara-opening-info h1.title").text();
+  return { title, author, date, content };  
 }
 
 async function scrapeLinks() {
@@ -149,20 +163,8 @@ async function downloadLinks(links) {
   for (const link of links) {
     let item = getArticle(link.hash);
     if (item==null) {    // not already downloaded        
-      let content = await scrapeArticle(link.href);
-      let lines = content.split('\n');
-      let date = lines[2];
-      let author = lines[1];
-      if (TESTDATE.test(date)) {
-        let ddmmyyyy = date.split("/");
-        let newdate = new Date(ddmmyyyy[2], ddmmyyyy[1] - 1, ddmmyyyy[0]);
-        link.date = newdate.getTime();
-        link.author = author;
-      } else {
-        link.author = "";
-        link.date = Date.now();
-      }
-      setArticle(link.hash,{...link,content});
+      let article = await scrapeArticle(link.href);
+      setArticle(link.hash, { ...link, ...article });
     }
   }
 }
