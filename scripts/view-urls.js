@@ -4,7 +4,7 @@ const path = require('path');
 
 const ROOT = "https://ara.cat/opinio";
 
-const ARTICLES_JSON_FN = 'data/ara-articles.json';
+const ARTICLES_JSON_FN = './data/ara-articles.json';
 // https://en.wikipedia.org/wiki/Jenkins_hash_function
 function jenkinsHash(str) {
   let a = 0;

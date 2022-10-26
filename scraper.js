@@ -6,9 +6,6 @@ const request = require("superagent");
 const cheerio = require("cheerio");
 const fs = require("fs/promises");
 
-const ROOT = "https://ara.cat/opinio";
-const TESTDATE = /\d+\/\d+\/\d{4}/;
-
 /******************************************************************/
 const ARTICLES_JSON_FN = '.data/ara-articles.json';
 
@@ -89,6 +86,7 @@ async function readPage(url) {
     let res = await request(url);
     return res.text;
   } catch(err) {
+    console.error('readPage',err);
     return '';
   }
 }
@@ -130,28 +128,30 @@ function extractSelectorText($, selector) {
       .replace(/ +(?= )/g, '');  // Replace multiple spaces with single space 
     return txt;
   });
-  return texts.get().join('\n');
+  return texts.get().join('\n').trim();
 }
 
 /******************************************************************/
+const TESTDATE = /\d+\/\d+\/\d{4}/;
 async function scrapeArticle(url) {
   let res = await request(url);
   let html = res.text;
   let $ = cheerio.load(html);
+  let title = extractSelectorText($,".ara-opening-info h1.title");
   let content = extractSelectorText($, ".ara-body p");
-  let author = $("opinion-authors a.name").text();
-  let date = $(".ara-opening-info span.date").text();
+  let author = $(".opinion-authors a.name").text().trim();
+  let date = $(".ara-opening-info span.date").text().trim();
   if (TESTDATE.test(date)) {
-    let ddmmyyyy = date.split("/");
-    let newdate = new Date(ddmmyyyy[2], ddmmyyyy[1] - 1, ddmmyyyy[0]);
+    let [dd,mm, yyyy] = date.split("/");
+    let newdate = new Date(yyyy, mm - 1, dd);
     date = newdate.getTime();
   } else {
     date = Date.now();
   }
-  let title = $(".ara-opening-info h1.title").text();
   return { title, author, date, content };  
 }
 
+const ROOT = "https://ara.cat/opinio";
 async function scrapeLinks() {
   let html = await readPage(ROOT);
   let links = extractLinks(html);

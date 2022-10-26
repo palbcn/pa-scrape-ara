@@ -78,11 +78,23 @@ function setArticle(hash, article) {
 }
 
 
+function articleToString(article) {
+  let d = new Date(article.date).toLocaleDateString();
+  let t = article.title.trim();
+  return `${d} ${article.hash} ${t} by ${article.author}\n    ${article.href}`;
+}
+
+
 (async function main() {
-  allArticles = await readArticles();
+  allArticles = await readArs();
   modifiedArticles = false;
-
-
-
+  let articles = allArticles.map(a => { return { date: a.date, hash: a.hash, href: a.href, title: a.title, author: a.author } })
+  articles.sort((a, b) => b.date - a.date);
+  console.log(articles.length, 'Articles');
+  console.log('0', articleToString(articles[0]));
+  console.log('1', articleToString(articles[1]));
+  console.log('...')
+  console.log(articles.length - 2, articleToString(articles[articles.length - 2]));
+  console.log(articles.length - 1, articleToString(articles[articles.length - 1]));
 })()
 

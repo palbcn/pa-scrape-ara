@@ -2,19 +2,26 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Launch Server",
-        "program": "${workspaceFolder}/server.js",
+        "name": "nodemon server",
         "request": "launch",
+        "type": "node",
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nodemon",
+        "windows": {
+          "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nodemon.cmd"
+        },
+        "program": "${workspaceFolder}/server.js",
+        "restart": true,
+        "internalConsoleOptions": "neverOpen",
         "skipFiles": [
           "<node_internals>/**"
         ],
-        "type": "pwa-node"
+        "console": "integratedTerminal",
       },
       {
         "name": "Launch current",
-        "program": "${file}",
-        "type": "pwa-node",
+        "type": "node",
         "request": "launch",
+        "program": "${file}",
         "skipFiles": [
           "<node_internals>/**"
         ],
