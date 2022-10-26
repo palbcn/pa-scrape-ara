@@ -35,6 +35,8 @@ header {
 header a {
   color: #ccf;
 }
+
+p.info { font-size: 0.8rem;}
 footer {
   background-color: #999;
   font-size: 0.8rem;
