@@ -24,7 +24,7 @@
   
   function renderArticleContent(content){
     let lines = content.split(/\r?\n/);
-    lines = lines.slice(4);
+    //lines = lines.slice(4);
     lines = lines.map( line => `<p>${line}</p>`);
     return lines.join('\n');
   }

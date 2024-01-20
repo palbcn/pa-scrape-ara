@@ -6,9 +6,6 @@ const request = require("superagent");
 const cheerio = require("cheerio");
 const fs = require("fs/promises");
 
-const ROOT = "https://ara.cat/opinio";
-const TESTDATE = /\d+\/\d+\/\d{4}/;
-
 /******************************************************************/
 const ARTICLES_JSON_FN = '.data/ara-articles.json';
 
@@ -89,6 +86,7 @@ async function readPage(url) {
     let res = await request(url);
     return res.text;
   } catch(err) {
+    console.error('readPage',err);
     return '';
   }
 }
@@ -109,7 +107,6 @@ function extractLinks(s) {
       .replace(/\s+/gm,' ');
     return link;
   });
-  console.log(links.length);
 	links = links.filter( link => 
     (link.href !== undefined) && 
     (link.href !== '') && 
@@ -120,24 +117,41 @@ function extractLinks(s) {
   return links;
 }
 
-function extractSelectorText(html,selector){
-  let $ = cheerio.load(html);
+function extractSelectorText($, selector) {
   let selected = $(selector);
-  return selected.text()
-        .replace(/\t/g, ' ')       // replace tabs
-        .replace(/ *(\n|\r|\r\n) */g, '\n')
-        .replace(/\n+(?=\n)/g, '') // Replace multiple lines with single line 
-        .replace(/ +(?= )/g, '');  // Replace multiple spaces with single space 
+  let texts = selected.map((indx, el) => {
+    let $el = $(el);
+    let txt = $el.text();
+    txt = txt.replace(/\t/g, ' ')       // replace tabs
+      .replace(/ *(\n|\r|\r\n) */g, '\n')
+      .replace(/\n+(?=\n)/g, '') // Replace multiple lines with single line 
+      .replace(/ +(?= )/g, '');  // Replace multiple spaces with single space 
+    return txt;
+  });
+  return texts.get().join('\n').trim();
 }
 
 /******************************************************************/
+const TESTDATE = /\d+\/\d+\/\d{4}/;
 async function scrapeArticle(url) {
   let res = await request(url);
   let html = res.text;
-  let txt = extractSelectorText(html,"main");
-  return txt;  
+  let $ = cheerio.load(html);
+  let title = extractSelectorText($,".ara-opening-info h1.title");
+  let content = extractSelectorText($, ".ara-body p");
+  let author = $(".opinion-authors a.name").text().trim();
+  let date = $(".ara-opening-info span.date").text().trim();
+  if (TESTDATE.test(date)) {
+    let [dd,mm, yyyy] = date.split("/");
+    let newdate = new Date(yyyy, mm - 1, dd);
+    date = newdate.getTime();
+  } else {
+    date = Date.now();
+  }
+  return { title, author, date, content };  
 }
 
+const ROOT = "https://ara.cat/opinio";
 async function scrapeLinks() {
   let html = await readPage(ROOT);
   let links = extractLinks(html);
@@ -149,20 +163,8 @@ async function downloadLinks(links) {
   for (const link of links) {
     let item = getArticle(link.hash);
     if (item==null) {    // not already downloaded        
-      let content = await scrapeArticle(link.href);
-      let lines = content.split('\n');
-      let date = lines[2];
-      let author = lines[1];
-      if (TESTDATE.test(date)) {
-        let ddmmyyyy = date.split("/");
-        let newdate = new Date(ddmmyyyy[2], ddmmyyyy[1] - 1, ddmmyyyy[0]);
-        link.date = newdate.getTime();
-        link.author = author;
-      } else {
-        link.author = "";
-        link.date = Date.now();
-      }
-      setArticle(link.hash,{...link,content});
+      let article = await scrapeArticle(link.href);
+      setArticle(link.hash, { ...link, ...article });
     }
   }
 }

@@ -6,22 +6,22 @@
     <meta name="description" content="PA-scrape-ara">
     <title>Scraping opinió d'ara</title>
     <link rel="stylesheet" href="style.css">
-    <script defer src="script.js" ></script>
+    <script defer src="https://unpkg.com/htmx.org@1.8.2"></script>
+    <script defer src="client.js"></script>
   </head>
   <body>
     <header>
-      <h3><em>Otra frikada de PA para JI</em></h3>
-      <h1><a href="/">Scraping opinió d'ara</a></h1>      
+      <h3><em>Una altra frikada de PA per JI</em></h3>
+      <h1>Scraping opinió d'ara.</h1>      
     </header>
-    <main>      
-      <section id="articles">
-        <em>loading articles&hellip;</em>
+    <main>  
+      <h1>Articles</h1> 
+      <p class="info" hx-get="info" hx-trigger="load"></p>      
+      <section id="articles" hx-get="/articles" hx-trigger="load">
+          <article><h1><em>Carregant articles&hellip;</em></h1></article>
       </section>
     </main>
-    <footer>
-      <p>Service started <span id="info-started">99-99-1999</span><br/>
-         Articles loaded <span id="info-loaded">99-99-1999</span><br/>         
-         Page rendered <span id="info-now">99-99-1999</span></p>
+    <footer>      
       <p>&copy; La Pera Limonera 2022. All Rights Reserved.</p>      
     </footer>
   </body>

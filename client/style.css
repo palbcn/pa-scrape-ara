@@ -5,7 +5,7 @@ html {
   box-sizing: inherit; margin:0;padding:0;
 }
 body {
-  font-family: Roboto,Arial,sans-serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 14px;
 }
 body {
@@ -21,7 +21,7 @@ main {
 }
 main h1 {
   border-top: 1px solid grey;
-  font-size: 2rem;
+  font-size: 1.6rem;
 }
 main p {
   font-size: 20px;
@@ -35,6 +35,14 @@ header {
 header a {
   color: #ccf;
 }
+article div {
+  display:none;
+}
+article h1 {
+  cursor: pointer;
+}
+
+p.info { font-size: 0.8rem;}
 footer {
   background-color: #999;
   font-size: 0.8rem;
