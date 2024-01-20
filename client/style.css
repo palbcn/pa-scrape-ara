@@ -35,6 +35,12 @@ header {
 header a {
   color: #ccf;
 }
+article div {
+  display:none;
+}
+article h1 {
+  cursor: pointer;
+}
 
 p.info { font-size: 0.8rem;}
 footer {

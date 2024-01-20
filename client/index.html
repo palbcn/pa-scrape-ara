@@ -7,17 +7,18 @@
     <title>Scraping opinió d'ara</title>
     <link rel="stylesheet" href="style.css">
     <script defer src="https://unpkg.com/htmx.org@1.8.2"></script>
+    <script defer src="client.js"></script>
   </head>
   <body>
     <header>
       <h3><em>Una altra frikada de PA per JI</em></h3>
-      <h1>Scraping opinió d'ara.</h1>      
+      <h1>Scraping opinió d'ara.</h1>
     </header>
     <main>  
       <h1>Articles</h1> 
       <p class="info" hx-get="info" hx-trigger="load"></p>      
       <section id="articles" hx-get="/articles" hx-trigger="load">
-          <article><h1><em>Carregant articles&hellip;</em></h1></article>
+        <h1><em>Carregant articles&hellip;</em></h1>
       </section>
     </main>
     <footer>      
